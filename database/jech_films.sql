@@ -190,6 +190,26 @@ CREATE TABLE views (
 ) ENGINE=InnoDB;
 
 -- =====================================================
+-- TABLA: watch_progress
+-- Progreso de reproducción para "Continuar viendo"
+-- =====================================================
+CREATE TABLE watch_progress (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    content_type ENUM('movie', 'episode') NOT NULL,
+    content_id INT NOT NULL,
+    progress_seconds INT NOT NULL DEFAULT 0 COMMENT 'Segundos vistos',
+    duration_seconds INT NOT NULL DEFAULT 0 COMMENT 'Duración total del contenido',
+    is_completed BOOLEAN DEFAULT FALSE COMMENT 'True si vio más del 90%',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_user_progress (user_id, content_type, content_id),
+    INDEX idx_user (user_id),
+    INDEX idx_content (content_type, content_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- =====================================================
 -- TABLA: vault_settings
 -- Configuración de la Caja Fuerte (contenido adulto)
 -- =====================================================

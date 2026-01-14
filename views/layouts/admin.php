@@ -45,10 +45,30 @@
     ?>
     
     <div class="flex min-h-screen">
+        <!-- Mobile Header -->
+        <div class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a] border-b border-white/10 px-4 py-3 flex items-center justify-between">
+            <a href="<?= url('') ?>" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <span class="logo-text text-lg">
+                    <span class="text-white">JECH</span><span class="text-red-500">FILMS</span>
+                </span>
+            </a>
+            <button onclick="toggleSidebar()" class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Sidebar Overlay (mobile) -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+        
         <!-- Sidebar -->
-        <aside class="w-64 bg-[#0a0a0a] border-r border-white/5 fixed h-full">
-            <!-- Logo -->
-            <div class="p-6 border-b border-white/5">
+        <aside id="sidebar" class="w-64 bg-[#0a0a0a] border-r border-white/5 fixed h-full z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+            <!-- Logo (desktop) -->
+            <div class="p-6 border-b border-white/5 hidden lg:block">
                 <a href="<?= url('') ?>" class="flex items-center gap-2 mb-1">
                     <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -60,8 +80,18 @@
                 <span class="text-xs text-gray-500">Panel de Administración</span>
             </div>
             
+            <!-- Mobile close button -->
+            <div class="lg:hidden p-4 border-b border-white/5 flex items-center justify-between">
+                <span class="text-sm text-gray-400">Menú</span>
+                <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
             <!-- Navegación -->
-            <nav class="p-3 space-y-1">
+            <nav class="p-3 space-y-1 mt-2 lg:mt-0">
                 <?php foreach ($navItems as $item): 
                     $isActive = strpos($currentPath, $item[0]) !== false;
                 ?>
@@ -84,7 +114,7 @@
         </aside>
         
         <!-- Main content -->
-        <main class="flex-1 ml-64 p-8 bg-[#0f0f0f]">
+        <main class="flex-1 lg:ml-64 p-4 lg:p-8 bg-[#0f0f0f] pt-20 lg:pt-8">
             <!-- Flash messages -->
             <?php $flash = getFlash(); if ($flash): ?>
             <div class="mb-6 px-5 py-4 rounded-xl flex items-center gap-3 <?= $flash['type'] === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'bg-green-500/10 border border-green-500/30 text-green-400' ?>">
@@ -100,6 +130,15 @@
             <?= $content ?? '' ?>
         </main>
     </div>
+    
+    <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+    </script>
     
 </body>
 </html>

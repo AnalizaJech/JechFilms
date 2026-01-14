@@ -113,16 +113,19 @@ class Category extends Model {
     }
     
     /**
-     * Obtiene las categorías más populares
+     * Obtiene las categorías más populares con conteos separados
      */
     public function getPopular(int $limit = 10): array {
         $sql = "
             SELECT c.*, 
-                   (SELECT COUNT(*) FROM movie_categories WHERE category_id = c.id) +
-                   (SELECT COUNT(*) FROM series_categories WHERE category_id = c.id) as content_count
+                   (SELECT COUNT(*) FROM movie_categories WHERE category_id = c.id) as movies_count,
+                   (SELECT COUNT(*) FROM series_categories WHERE category_id = c.id) as series_count
             FROM categories c
             WHERE c.parent_id IS NULL
-            ORDER BY content_count DESC
+            ORDER BY (
+                (SELECT COUNT(*) FROM movie_categories WHERE category_id = c.id) +
+                (SELECT COUNT(*) FROM series_categories WHERE category_id = c.id)
+            ) DESC
             LIMIT :limit
         ";
         

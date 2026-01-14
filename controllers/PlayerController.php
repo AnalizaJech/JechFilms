@@ -2,21 +2,25 @@
 /**
  * Controlador del Reproductor
  * Reproducción de películas y episodios
+ * Con sistema de progreso (Continuar viendo)
  */
 
 require_once BASE_PATH . '/models/Movie.php';
 require_once BASE_PATH . '/models/Series.php';
 require_once BASE_PATH . '/models/View.php';
+require_once BASE_PATH . '/models/WatchProgress.php';
 
 class PlayerController {
     private Movie $movieModel;
     private Series $seriesModel;
     private View $viewModel;
+    private WatchProgress $progressModel;
     
     public function __construct() {
         $this->movieModel = new Movie();
         $this->seriesModel = new Series();
         $this->viewModel = new View();
+        $this->progressModel = new WatchProgress();
     }
     
     /**
@@ -39,6 +43,12 @@ class PlayerController {
         
         // Registrar visualización
         $viewId = $this->viewModel->record('movie', $id, userId());
+        
+        // Obtener progreso guardado (si el usuario está logueado)
+        $watchProgress = null;
+        if (isAuthenticated()) {
+            $watchProgress = $this->progressModel->getProgress(userId(), 'movie', $id);
+        }
         
         $content = $movie;
         $contentType = 'movie';
@@ -69,6 +79,12 @@ class PlayerController {
         // Registrar visualización
         $viewId = $this->viewModel->record('episode', $id, userId());
         
+        // Obtener progreso guardado
+        $watchProgress = null;
+        if (isAuthenticated()) {
+            $watchProgress = $this->progressModel->getProgress(userId(), 'episode', $id);
+        }
+        
         // Obtener siguiente episodio
         $nextContent = $this->seriesModel->getNextEpisode(
             $episode['series_id'],
@@ -95,3 +111,4 @@ class PlayerController {
         }
     }
 }
+

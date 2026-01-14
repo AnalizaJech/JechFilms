@@ -13,7 +13,8 @@ ob_start();
 </div>
 
 <div class="bg-[#161616] rounded-2xl border border-white/5 overflow-hidden">
-    <table class="w-full">
+    <div class="overflow-x-auto">
+    <table class="w-full min-w-[700px]">
         <thead class="bg-white/5 text-xs uppercase tracking-wider text-gray-400">
             <tr>
                 <th class="text-left px-5 py-4 font-medium">Usuario</th>
@@ -64,6 +65,7 @@ ob_start();
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- Modal de confirmación eliminar -->

@@ -22,7 +22,8 @@ ob_start();
                 No hay categorías creadas.
             </div>
         <?php else: ?>
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[500px]">
                 <thead class="bg-white/5 text-xs uppercase tracking-wider text-gray-400">
                     <tr>
                         <th class="text-left px-5 py-4 font-medium">Categoría</th>
@@ -76,6 +77,7 @@ ob_start();
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
         <?php endif; ?>
     </div>
     

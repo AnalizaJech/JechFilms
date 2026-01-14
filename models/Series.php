@@ -264,6 +264,34 @@ class Series extends Model {
     }
     
     /**
+     * Actualiza un episodio
+     */
+    public function updateEpisode(int $episodeId, array $data): bool {
+        $episode = $this->getEpisode($episodeId);
+        if (!$episode) {
+            return false;
+        }
+        
+        $fields = [];
+        $params = ['id' => $episodeId];
+        
+        foreach ($data as $key => $value) {
+            $fields[] = "{$key} = :{$key}";
+            $params[$key] = $value;
+        }
+        
+        $sql = "UPDATE episodes SET " . implode(', ', $fields) . " WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute($params);
+        
+        if ($result && isset($data['season'])) {
+            $this->updateSeasonCount($episode['series_id']);
+        }
+        
+        return $result;
+    }
+    
+    /**
      * Sincroniza las categorías de una serie
      */
     public function syncCategories(int $seriesId, array $categoryIds): void {

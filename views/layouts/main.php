@@ -49,6 +49,12 @@
         
         .nav-glass { backdrop-filter: blur(20px); background: rgba(10, 10, 10, 0.85); }
         
+        /* Quitar outline rojo del navegador en inputs */
+        input:focus, input:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
         html { height: 100%; }
         body { display: flex; flex-direction: column; }
         main { flex: 1; }
@@ -114,11 +120,33 @@
                 
                 <!-- Acciones -->
                 <div class="flex items-center gap-2">
-                    <a href="<?= url('search') ?>" class="p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </a>
+                    <!-- Buscador con Autocomplete -->
+                    <div class="relative" id="searchBox">
+                        <div class="flex items-center">
+                            <button id="searchToggle" class="p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition md:hidden">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </button>
+                            <div class="hidden md:flex items-center bg-white/5 rounded-xl px-3 py-2 gap-2 min-w-[200px] lg:min-w-[280px] focus-within:bg-white/8 transition-all group">
+                                <svg class="w-4 h-4 text-gray-500 group-focus-within:text-gray-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <input type="text" id="searchInput" placeholder="Buscar películas, series..." 
+                                       class="bg-transparent border-none outline-none text-sm text-white placeholder-gray-500 w-full focus:placeholder-gray-300"
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        
+                        <!-- Dropdown de resultados -->
+                        <div id="searchResults" class="absolute top-full right-0 mt-2 w-80 md:w-96 bg-[#1a1a1a] rounded-2xl shadow-2xl border border-white/10 overflow-hidden hidden z-50">
+                            <div id="searchResultsList" class="max-h-96 overflow-y-auto"></div>
+                            <a href="<?= url('search') ?>" id="searchViewAll" class="hidden items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-sm text-gray-400 hover:text-white transition border-t border-white/10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                Ver todos los resultados
+                            </a>
+                        </div>
+                    </div>
                     
                     <?php if (isAuthenticated()): ?>
                     <!-- Dropdown Usuario -->
@@ -284,6 +312,83 @@
                 flash.style.transition = 'all 0.3s ease';
                 setTimeout(() => flash.remove(), 300);
             }, 4000);
+        }
+        
+        // Búsqueda en tiempo real
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const searchResultsList = document.getElementById('searchResultsList');
+        const searchViewAll = document.getElementById('searchViewAll');
+        let searchTimeout = null;
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+                
+                // Debounce de 300ms
+                searchTimeout = setTimeout(() => {
+                    fetch('/api/search?q=' + encodeURIComponent(query))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.results && data.results.length > 0) {
+                                let html = '';
+                                data.results.forEach(item => {
+                                    const isMovie = item.type === 'movie';
+                                    const url = isMovie ? '/watch/movie/' + item.id : '/series/' + item.id;
+                                    const badge = isMovie ? 
+                                        '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-600">Película</span>' : 
+                                        '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-600">Serie</span>';
+                                    const poster = item.poster ? '/' + item.poster : '/assets/images/default-poster.svg';
+                                    
+                                    html += '<a href="' + url + '" class="flex items-center gap-3 p-3 hover:bg-white/5 transition group">';
+                                    html += '<img src="' + poster + '" alt="" class="w-10 h-14 object-cover rounded-lg bg-zinc-800">';
+                                    html += '<div class="flex-1 min-w-0">';
+                                    html += '<div class="flex items-center gap-2 mb-0.5">' + badge + '</div>';
+                                    html += '<div class="font-medium text-sm truncate group-hover:text-white transition">' + item.title + '</div>';
+                                    html += '<div class="text-xs text-gray-500">';
+                                    if (item.year) html += item.year;
+                                    if (item.categories) html += ' • ' + item.categories.split(', ').slice(0,2).join(', ');
+                                    html += '</div></div></a>';
+                                });
+                                searchResultsList.innerHTML = html;
+                                searchViewAll.href = '/search?q=' + encodeURIComponent(query);
+                                searchViewAll.classList.remove('hidden');
+                                searchViewAll.classList.add('flex');
+                                searchResults.classList.remove('hidden');
+                            } else {
+                                searchResultsList.innerHTML = '<div class="p-6 text-center text-gray-500 text-sm">No se encontraron resultados para "<span class="text-white">' + query + '</span>"</div>';
+                                searchViewAll.classList.add('hidden');
+                                searchResults.classList.remove('hidden');
+                            }
+                        })
+                        .catch(e => console.log('Search error:', e));
+                }, 300);
+            });
+            
+            // Cerrar al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#searchBox')) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+            
+            // Cerrar con Escape
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    searchResults.classList.add('hidden');
+                    this.blur();
+                }
+                if (e.key === 'Enter' && this.value.trim().length >= 2) {
+                    window.location.href = '/search?q=' + encodeURIComponent(this.value.trim());
+                }
+            });
         }
     </script>
 </body>

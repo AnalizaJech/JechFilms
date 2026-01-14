@@ -1,6 +1,7 @@
 <?php
 /**
  * Controlador CRUD de Películas (Admin)
+ * Con auto-detección de extensión de video
  */
 
 require_once BASE_PATH . '/models/Movie.php';
@@ -10,10 +11,36 @@ class MoviesController {
     private Movie $movieModel;
     private Category $categoryModel;
     
+    // Extensiones de video soportadas
+    private array $videoExtensions = ['mp4', 'mkv', 'avi', 'webm', 'mov', 'm4v'];
+    
     public function __construct() {
         requireAdmin();
         $this->movieModel = new Movie();
         $this->categoryModel = new Category();
+    }
+    
+    /**
+     * Busca el archivo de video con cualquier extensión soportada
+     * Retorna la ruta relativa (movies/nombre.ext) o null si no existe
+     */
+    private function findVideoFile(string $videoName): ?string {
+        $basePath = PUBLIC_PATH . '/media/movies/';
+        
+        foreach ($this->videoExtensions as $ext) {
+            $filePath = $basePath . $videoName . '.' . $ext;
+            if (file_exists($filePath)) {
+                return 'movies/' . $videoName . '.' . $ext;
+            }
+        }
+        
+        // Si no existe, intentar buscar con el nombre exacto (por si ya tiene extensión)
+        if (file_exists($basePath . $videoName)) {
+            return 'movies/' . $videoName;
+        }
+        
+        // Retornar con extensión por defecto si no existe aún
+        return 'movies/' . $videoName . '.mp4';
     }
     
     public function index(): void {
@@ -31,12 +58,16 @@ class MoviesController {
             redirect('admin/movies');
         }
         
+        // Procesar video_name para obtener video_path completo
+        $videoName = trim(post('video_name', ''));
+        $videoPath = $this->findVideoFile($videoName);
+        
         $data = [
             'title' => trim(post('title', '')),
             'description' => trim(post('description', '')),
             'year' => post('year') ?: null,
             'duration' => (int) post('duration') ?: null,
-            'video_path' => trim(post('video_path', '')),
+            'video_path' => $videoPath,
             'is_featured' => post('is_featured') ? 1 : 0,
             'is_vault' => post('is_vault') ? 1 : 0
         ];
@@ -81,12 +112,16 @@ class MoviesController {
             redirect('admin/movies');
         }
         
+        // Procesar video_name para obtener video_path completo
+        $videoName = trim(post('video_name', ''));
+        $videoPath = $this->findVideoFile($videoName);
+        
         $data = [
             'title' => trim(post('title', '')),
             'description' => trim(post('description', '')),
             'year' => post('year') ?: null,
             'duration' => (int) post('duration') ?: null,
-            'video_path' => trim(post('video_path', '')),
+            'video_path' => $videoPath,
             'is_featured' => post('is_featured') ? 1 : 0,
             'is_vault' => post('is_vault') ? 1 : 0
         ];
@@ -114,3 +149,4 @@ class MoviesController {
         redirect('admin/movies');
     }
 }
+
