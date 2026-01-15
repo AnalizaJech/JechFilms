@@ -114,6 +114,7 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
             class="w-full h-full object-contain"
             preload="auto"
             playsinline
+            autoplay
         >
             <source src="<?= e($videoUrl) ?>" type="video/mp4">
             Tu navegador no soporta la reproducción de video.
@@ -171,7 +172,7 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         </div>
         
         <!-- Controls Footer (Mejorado Mobile) -->
-        <div id="playerControls" class="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black via-black/80 to-transparent pt-32 pb-12 md:pb-8 px-4 md:px-12 opacity-0 transition-opacity duration-300">
+        <div id="playerControls" class="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black via-black/80 to-transparent pt-32 pb-20 md:pb-8 px-4 md:px-12 opacity-0 transition-opacity duration-300">
             <div class="max-w-screen-2xl mx-auto space-y-2 md:space-y-4">
                 
                 <!-- Barra de progreso -->
@@ -194,13 +195,13 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
                     
                     <!-- Izquierda: Play, Next, Skip, Vol -->
                     <div class="flex items-center gap-4 md:gap-6">
-                        <button onclick="togglePlay()" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:scale-105 flex items-center justify-center transition transform">
-                            <svg id="playPauseBtn" class="w-5 h-5 md:w-6 md:h-6 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <button onclick="togglePlay()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-white" title="Reproducir/Pausar">
+                            <svg id="playPauseBtn" class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </button>
                         
                         <?php if ($nextContent): ?>
-                        <a href="<?= url('watch/episode/' . $nextContent['id']) ?>" class="text-gray-300 hover:text-white transition p-1" title="Siguiente: <?= e($nextContent['title']) ?>">
-                            <svg class="w-7 h-7 md:w-8 md:h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M5.536 21.886a1.004 1.004 0 0 0 1.033-.064l13-9a1 1 0 0 0 0-1.644l-13-9A1 1 0 0 0 5 3v18a1 1 0 0 0 .536.886zM19 3v18h2V3h-2z"/></svg>
+                        <a href="<?= url('watch/episode/' . $nextContent['id']) ?>" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Siguiente: <?= e($nextContent['title']) ?>">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M5.536 21.886a1.004 1.004 0 0 0 1.033-.064l13-9a1 1 0 0 0 0-1.644l-13-9A1 1 0 0 0 5 3v18a1 1 0 0 0 .536.886zM19 3v18h2V3h-2z"/></svg>
                         </a>
                         <?php endif; ?>
 
@@ -508,9 +509,10 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         // Progress bar input
         progressBar.addEventListener('input', () => {
             const val = progressBar.value;
-            video.currentTime = val;
+            video.currentTime = val; // Seek immediately
             const percent = (val / video.duration) * 100;
             if(progressFill) progressFill.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(val);
         });
         
         // Volume
@@ -543,7 +545,12 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         // Fullscreen change
         document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement) {
-                fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+                // Icono contraer
+                fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5-5m0 0l5-5m-5 5h14m-14-10l5 5m-5-5l5-5m-5 5h14"/>'; // Fallback path if needed, but let's use a standard "Exit Fullscreen" or "Contract"
+                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H4v6m6-6v6m0-6H4m10 0h6v6m-6-6v6m0-6h6M14 10h6V4m-6 6V4m0 6h6M10 10H4V4m6 6V4m0 6H4"/>'; // Complex grid
+                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'; // Cross (User hated this)
+                 // Correct Contract Icon (Arrows pointing in)
+                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 16h6m0 0v6m14-6h-6m0 0v6M19 8h-6m0 0V2M5 8h6m0 0V2"/>';
             } else {
                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>';
             }

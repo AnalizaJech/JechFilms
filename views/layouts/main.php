@@ -424,8 +424,15 @@
                                 resultHTML += '</div></a>';
                             });
                              listEl.innerHTML = resultHTML;
+                             listEl.innerHTML = resultHTML;
                              listEl.parentElement.classList.remove('hidden');
-                             if(viewAllEl) viewAllEl.classList.remove('hidden');
+                             if(viewAllEl) {
+                                 viewAllEl.classList.remove('hidden');
+                                 // Add query param to href
+                                 const currentUrl = new URL(viewAllEl.href);
+                                 currentUrl.searchParams.set('q', query);
+                                 viewAllEl.href = currentUrl.toString();
+                             }
                         } else {
                             listEl.innerHTML = '<div class="p-4 text-center text-gray-500">Sin resultados</div>';
                             listEl.parentElement.classList.remove('hidden');
