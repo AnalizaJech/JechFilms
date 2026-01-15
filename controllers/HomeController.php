@@ -45,6 +45,21 @@ class HomeController {
         // Categorías populares
         $categories = $this->categoryModel->getPopular(6);
         
+        // Auto-open modal logic
+        $autoOpenItem = null;
+        if (isset($_GET['open_modal_id']) && isset($_GET['type'])) {
+            $id = intval($_GET['open_modal_id']);
+            $type = $_GET['type'];
+            
+            if ($type === 'movie') {
+                $autoOpenItem = $this->movieModel->getWithDetails($id);
+                if($autoOpenItem) $autoOpenItem['type'] = 'movie';
+            } elseif ($type === 'series') {
+                $autoOpenItem = $this->seriesModel->getWithDetails($id);
+                if($autoOpenItem) $autoOpenItem['type'] = 'series';
+            }
+        }
+        
         require_once VIEWS_PATH . '/home/index.php';
     }
 }

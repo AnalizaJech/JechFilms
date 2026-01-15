@@ -517,6 +517,16 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft') prevSlide();
 });
 </script>
+<?php if (isset($autoOpenItem) && $autoOpenItem): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const item = <?= json_encode($autoOpenItem) ?>;
+        // Ensure type is distinct in case getWithDetails didn't include it or it was overwritten
+        item.type = '<?= $_GET['type'] ?>'; 
+        openInfoModal(item);
+    });
+</script>
+<?php endif; ?>
 <?php else: ?>
 <!-- Hero sin contenido - Diseño Responsive -->
 <section class="relative overflow-hidden pt-20 md:pt-0" style="min-height: calc(100vh - 64px); margin-top: 64px;">

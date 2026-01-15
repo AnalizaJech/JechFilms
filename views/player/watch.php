@@ -10,6 +10,14 @@ $videoUrl = url('media/' . ($content['video_path'] ?? ''));
 $progressType = $contentType === 'episode' ? 'episode' : 'movie';
 $progressId = $content['id'];
 $initialProgress = $watchProgress['progress_seconds'] ?? 0;
+
+// Calculate back URL to reopen modal
+$backUrl = url('');
+if ($contentType === 'movie') {
+    $backUrl = url('?open_modal_id=' . $content['id'] . '&type=movie');
+} elseif ($contentType === 'episode') {
+    $backUrl = url('?open_modal_id=' . ($content['series_id'] ?? 0) . '&type=series');
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -141,7 +149,7 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         <!-- Header -->
         <div id="playerHeader" class="absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/90 via-black/50 to-transparent pt-4 pb-16 px-4 md:px-8 opacity-0 transition-opacity duration-300">
             <div class="flex items-center justify-between max-w-screen-2xl mx-auto">
-                <a href="javascript:history.back()" class="flex items-center gap-2 md:gap-3 text-white/90 hover:text-white transition group">
+                <a href="<?= $backUrl ?>" class="flex items-center gap-2 md:gap-3 text-white/90 hover:text-white transition group">
                     <div class="w-10 h-10 rounded-full bg-white/10 group-hover:bg-white/20 flex items-center justify-center transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -459,14 +467,17 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         // Events
         // loadedmetadata (Already defined above)
         
+        let isDragging = false;
+        
         video.addEventListener('timeupdate', () => {
+            if (isDragging) return; // Don't update if user is dragging
+            
             const current = Math.floor(video.currentTime);
             const duration = Math.floor(video.duration) || 1;
             const percent = (current / duration) * 100;
             
             currentTimeEl.textContent = formatTime(current);
             progressBar.value = current;
-            // UPDATE: Usar progressFill en lugar de --progress variable
             if(progressFill) progressFill.style.width = percent + '%';
             
             // Guardar progreso cada 30 segundos
@@ -507,12 +518,29 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         });
         
         // Progress bar input
+        // Progress bar interaction
+        progressBar.addEventListener('mousedown', () => isDragging = true);
+        progressBar.addEventListener('touchstart', () => isDragging = true);
+        
+        progressBar.addEventListener('mouseup', () => isDragging = false);
+        progressBar.addEventListener('touchend', () => isDragging = false);
+
         progressBar.addEventListener('input', () => {
             const val = progressBar.value;
-            video.currentTime = val; // Seek immediately
+            // Update UI immediately (preview)
             const percent = (val / video.duration) * 100;
             if(progressFill) progressFill.style.width = percent + '%';
             currentTimeEl.textContent = formatTime(val);
+            
+            // Option 1: Seek continuously while dragging (can be choppy if network is slow)
+            // video.currentTime = val; 
+            
+            // Option 2: Seek only on 'change', but user wants responsive seeking.
+            // Let's debounce slightly or just accept the chop for better UX responsiveness if requested.
+            // User complained: "no puedo adelantar tocando una momento" (I can't advance by touching a moment)
+            // This suggests click-to-seek wasn't working. 
+            // Setting currentTime on input usually fixes click-to-seek as 'input' fires on click too.
+            video.currentTime = val;
         });
         
         // Volume
@@ -545,12 +573,8 @@ $initialProgress = $watchProgress['progress_seconds'] ?? 0;
         // Fullscreen change
         document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement) {
-                // Icono contraer
-                fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5-5m0 0l5-5m-5 5h14m-14-10l5 5m-5-5l5-5m-5 5h14"/>'; // Fallback path if needed, but let's use a standard "Exit Fullscreen" or "Contract"
-                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H4v6m6-6v6m0-6H4m10 0h6v6m-6-6v6m0-6h6M14 10h6V4m-6 6V4m0 6h6M10 10H4V4m6 6V4m0 6H4"/>'; // Complex grid
-                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'; // Cross (User hated this)
-                 // Correct Contract Icon (Arrows pointing in)
-                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 16h6m0 0v6m14-6h-6m0 0v6M19 8h-6m0 0V2M5 8h6m0 0V2"/>';
+                // Icono contraer (Standard Minimize/Exit Fullscreen)
+                fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
             } else {
                 fullscreenIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>';
             }
