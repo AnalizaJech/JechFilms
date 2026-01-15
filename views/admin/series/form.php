@@ -108,6 +108,11 @@ input[type="number"] {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
+    z-index: 20;
+    pointer-events: auto;
+}
+.image-dropzone .preview-container.active ~ input[type="file"] {
+    pointer-events: none;
 }
 .image-dropzone .placeholder {
     padding: 2rem;
