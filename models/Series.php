@@ -87,6 +87,20 @@ class Series extends Model {
     }
     
     /**
+     * Obtiene el primer episodio de una serie
+     */
+    public function getFirstEpisode(int $seriesId): ?array {
+        $sql = "
+            SELECT * FROM episodes 
+            WHERE series_id = :series_id
+            ORDER BY season ASC, episode_number ASC
+            LIMIT 1
+        ";
+        
+        return $this->queryOne($sql, ['series_id' => $seriesId]);
+    }
+    
+    /**
      * Obtiene el siguiente episodio
      */
     public function getNextEpisode(int $seriesId, int $season, int $episodeNumber): ?array {

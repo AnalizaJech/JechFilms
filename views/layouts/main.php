@@ -84,7 +84,7 @@
     ?>
     
     <!-- Navbar -->
-    <nav class="fixed w-full top-0 z-50 nav-glass border-b border-white/5">
+    <nav class="fixed w-full top-0 z-50 bg-black border-b border-white/10 transition-colors duration-300" id="navbar">
         <div class="container mx-auto px-6">
             <div class="flex items-center justify-between h-16">
                 
@@ -120,37 +120,37 @@
                 
                 <!-- Acciones -->
                 <div class="flex items-center gap-2">
-                    <!-- Buscador con Autocomplete -->
-                    <div class="relative" id="searchBox">
-                        <div class="flex items-center">
-                            <button id="searchToggle" class="p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition md:hidden">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </button>
-                            <div class="hidden md:flex items-center bg-white/5 rounded-xl px-3 py-2 gap-2 min-w-[200px] lg:min-w-[280px] focus-within:bg-white/8 transition-all group">
-                                <svg class="w-4 h-4 text-gray-500 group-focus-within:text-gray-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                                <input type="text" id="searchInput" placeholder="Buscar películas, series..." 
-                                       class="bg-transparent border-none outline-none text-sm text-white placeholder-gray-500 w-full focus:placeholder-gray-300"
-                                       autocomplete="off">
-                            </div>
+                    <!-- Buscador Desktop -->
+                    <div class="relative hidden md:block" id="searchBoxDesktop">
+                        <div class="flex items-center bg-white/5 rounded-xl px-3 py-2 gap-2 min-w-[200px] lg:min-w-[280px] focus-within:bg-white/8 transition-all group">
+                            <svg class="w-4 h-4 text-gray-500 group-focus-within:text-gray-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="Buscar películas, series..." 
+                                   class="bg-transparent border-none outline-none text-sm text-white placeholder-gray-500 w-full focus:placeholder-gray-300"
+                                   autocomplete="off">
                         </div>
                         
-                        <!-- Dropdown de resultados -->
+                        <!-- Dropdown Resultados (Desktop) -->
                         <div id="searchResults" class="absolute top-full right-0 mt-2 w-80 md:w-96 bg-[#1a1a1a] rounded-2xl shadow-2xl border border-white/10 overflow-hidden hidden z-50">
                             <div id="searchResultsList" class="max-h-96 overflow-y-auto"></div>
-                            <a href="<?= url('search') ?>" id="searchViewAll" class="hidden items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-sm text-gray-400 hover:text-white transition border-t border-white/10">
+                            <a href="<?= url('search') ?>" id="searchViewAll" class="hidden flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-sm text-gray-400 hover:text-white transition border-t border-white/10">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                 Ver todos los resultados
                             </a>
                         </div>
                     </div>
+
+                    <!-- Botón Hamburguesa Mobile -->
+                    <button id="mobileMenuBtn" class="p-2 -mr-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition md:hidden">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
                     
                     <?php if (isAuthenticated()): ?>
-                    <!-- Dropdown Usuario -->
-                    <div class="relative" id="user-dropdown-container">
+                    <!-- Dropdown Usuario (Desktop) -->
+                    <div class="relative hidden md:block" id="user-dropdown-container">
                         <button type="button" id="user-dropdown-btn" class="flex items-center gap-2 p-1 rounded-lg hover:bg-white/5 transition">
                             <img src="<?= avatarUrl(currentUser()['avatar'] ?? null) ?>" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-white/10">
                             <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="user-dropdown-arrow">
@@ -209,14 +209,89 @@
                         </div>
                     </div>
                     <?php else: ?>
-                    <a href="<?= url('login') ?>" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                        </svg>
+                    <a href="<?= url('login') ?>" class="hidden md:flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                         Entrar
                     </a>
                     <?php endif; ?>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu (Fullscreen Drawer) -->
+        <div id="mobileMenu" class="fixed inset-0 z-[60] bg-black transform translate-x-full transition-transform duration-300 md:hidden flex flex-col">
+            <!-- Header Mobile Menu -->
+            <div class="flex items-center justify-between px-6 h-16 border-b border-white/10 bg-black">
+                <!-- Logo Mobile -->
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <span class="logo-text text-[22px] tracking-wider">
+                        <span class="text-white">JECH</span><span class="text-red-500">FILMS</span>
+                    </span>
+                </div>
+                
+                <button id="closeMobileMenu" class="p-2 -mr-2 text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <!-- Mobile Search -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-500 group-focus-within:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="mobileSearchInput" placeholder="Buscar..." class="w-full bg-[#161616] text-white pl-10 pr-4 py-3.5 rounded-xl border border-white/5 focus:border-white/20 focus:bg-[#202020] outline-none transition-all placeholder-gray-500 text-base">
+                </div>
+                <!-- Resultados Mobile -->
+                <div id="mobileSearchContainer" class="mt-4 hidden bg-[#161616] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                     <div id="mobileSearchResultsList" class="max-h-[40vh] overflow-y-auto p-2 space-y-2"></div>
+                     <a href="<?= url('search') ?>" id="mobileSearchViewAll" class="hidden flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-sm text-gray-400 hover:text-white transition border-t border-white/10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        Ver todos los resultados
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Nav Links -->
+                <nav class="space-y-2">
+                    <a href="<?= url('') ?>" class="block px-4 py-3 rounded-xl text-lg font-medium <?= $currentPage === 'home' ? 'bg-white/10 text-white' : 'text-gray-400' ?>">Inicio</a>
+                    <a href="<?= url('movies') ?>" class="block px-4 py-3 rounded-xl text-lg font-medium <?= $currentPage === 'movies' ? 'bg-white/10 text-white' : 'text-gray-400' ?>">Películas</a>
+                    <a href="<?= url('series') ?>" class="block px-4 py-3 rounded-xl text-lg font-medium <?= $currentPage === 'series' ? 'bg-white/10 text-white' : 'text-gray-400' ?>">Series</a>
+                    <?php if (isAuthenticated()): ?>
+                    <a href="<?= url('list') ?>" class="block px-4 py-3 rounded-xl text-lg font-medium <?= $currentPage === 'list' ? 'bg-white/10 text-white' : 'text-gray-400' ?>">Mi Lista</a>
+                    <?php endif; ?>
+                </nav>
+                
+                <?php if (isAuthenticated()): ?>
+                <div class="pt-6 border-t border-white/5">
+                    <div class="flex items-center gap-3 mb-6 px-4">
+                        <img src="<?= avatarUrl(currentUser()['avatar'] ?? null) ?>" alt="" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-bold text-white"><?= e(currentUser()['username']) ?></p>
+                            <p class="text-sm text-gray-500"><?= e(currentUser()['email']) ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="<?= url('profile') ?>" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/5 text-sm font-medium text-gray-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> Mi Perfil
+                        </a>
+                        <a href="<?= url('logout') ?>" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-red-500/10 text-sm font-medium text-red-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg> Salir
+                        </a>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="pt-6 border-t border-white/5 px-4">
+                    <a href="<?= url('login') ?>" class="flex items-center justify-center w-full py-3 bg-red-600 rounded-xl text-white font-bold">Iniciar Sesión</a>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
             </div>
         </div>
     </nav>
@@ -322,72 +397,87 @@
         let searchTimeout = null;
         
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim();
-                
-                clearTimeout(searchTimeout);
-                
-                if (query.length < 2) {
-                    searchResults.classList.add('hidden');
+            function performSearch(query, listEl, viewAllEl) {
+                 if (query.length < 2) {
+                    listEl.parentElement.classList.add('hidden');
                     return;
                 }
                 
-                // Debounce de 300ms
+                fetch('/api/search?q=' + encodeURIComponent(query))
+                    .then(r => r.json())
+                    .then(data => {
+                        let resultHTML = '';
+                        if (data.results && data.results.length > 0) {
+                             data.results.forEach(item => {
+                                const isMovie = item.type === 'movie';
+                                const url = isMovie ? '/watch/movie/' + item.id : '/series/' + item.id;
+                                const badge = isMovie ? 
+                                    '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-600">Película</span>' : 
+                                    '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-600">Serie</span>';
+                                const poster = item.poster ? '/' + item.poster : '/assets/images/default-poster.svg';
+                                
+                                resultHTML += '<a href="' + url + '" class="flex items-center gap-3 p-3 hover:bg-white/5 transition group">';
+                                resultHTML += '<img src="' + poster + '" alt="" class="w-10 h-14 object-cover rounded-lg bg-zinc-800">';
+                                resultHTML += '<div class="flex-1 min-w-0">';
+                                resultHTML += '<div class="flex items-center gap-2 mb-0.5">' + badge + '</div>';
+                                resultHTML += '<div class="font-medium text-sm truncate group-hover:text-white transition">' + item.title + '</div>';
+                                resultHTML += '</div></a>';
+                            });
+                             listEl.innerHTML = resultHTML;
+                             listEl.parentElement.classList.remove('hidden');
+                             if(viewAllEl) viewAllEl.classList.remove('hidden');
+                        } else {
+                            listEl.innerHTML = '<div class="p-4 text-center text-gray-500">Sin resultados</div>';
+                            listEl.parentElement.classList.remove('hidden');
+                            if(viewAllEl) viewAllEl.classList.add('hidden');
+                        }
+                    });
+            }
+
+            // Desktop Search
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
-                    fetch('/api/search?q=' + encodeURIComponent(query))
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data.results && data.results.length > 0) {
-                                let html = '';
-                                data.results.forEach(item => {
-                                    const isMovie = item.type === 'movie';
-                                    const url = isMovie ? '/watch/movie/' + item.id : '/series/' + item.id;
-                                    const badge = isMovie ? 
-                                        '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-600">Película</span>' : 
-                                        '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-600">Serie</span>';
-                                    const poster = item.poster ? '/' + item.poster : '/assets/images/default-poster.svg';
-                                    
-                                    html += '<a href="' + url + '" class="flex items-center gap-3 p-3 hover:bg-white/5 transition group">';
-                                    html += '<img src="' + poster + '" alt="" class="w-10 h-14 object-cover rounded-lg bg-zinc-800">';
-                                    html += '<div class="flex-1 min-w-0">';
-                                    html += '<div class="flex items-center gap-2 mb-0.5">' + badge + '</div>';
-                                    html += '<div class="font-medium text-sm truncate group-hover:text-white transition">' + item.title + '</div>';
-                                    html += '<div class="text-xs text-gray-500">';
-                                    if (item.year) html += item.year;
-                                    if (item.categories) html += ' • ' + item.categories.split(', ').slice(0,2).join(', ');
-                                    html += '</div></div></a>';
-                                });
-                                searchResultsList.innerHTML = html;
-                                searchViewAll.href = '/search?q=' + encodeURIComponent(query);
-                                searchViewAll.classList.remove('hidden');
-                                searchViewAll.classList.add('flex');
-                                searchResults.classList.remove('hidden');
-                            } else {
-                                searchResultsList.innerHTML = '<div class="p-6 text-center text-gray-500 text-sm">No se encontraron resultados para "<span class="text-white">' + query + '</span>"</div>';
-                                searchViewAll.classList.add('hidden');
-                                searchResults.classList.remove('hidden');
-                            }
-                        })
-                        .catch(e => console.log('Search error:', e));
+                    performSearch(query, searchResultsList, searchViewAll);
                 }, 300);
             });
             
-            // Cerrar al hacer clic fuera
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#searchBox')) {
-                    searchResults.classList.add('hidden');
-                }
+            // Mobile Search
+            const mobileInput = document.getElementById('mobileSearchInput');
+            const mobileResultsList = document.getElementById('mobileSearchResultsList');
+            const mobileViewAll = document.getElementById('mobileSearchViewAll');
+            const mobileContainer = document.getElementById('mobileSearchContainer');
+
+            if(mobileInput) {
+                mobileInput.addEventListener('input', function() {
+                     const query = this.value.trim();
+                     if(query.length < 2) { 
+                         if(mobileContainer) mobileContainer.classList.add('hidden'); 
+                         return; 
+                     }
+                     clearTimeout(searchTimeout);
+                     searchTimeout = setTimeout(() => {
+                        performSearch(query, mobileResultsList, mobileViewAll);
+                     }, 300);
+                });
+            }
+        }
+        
+        // Mobile Menu Logic
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
             });
             
-            // Cerrar con Escape
-            searchInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    searchResults.classList.add('hidden');
-                    this.blur();
-                }
-                if (e.key === 'Enter' && this.value.trim().length >= 2) {
-                    window.location.href = '/search?q=' + encodeURIComponent(this.value.trim());
-                }
+            closeMobileMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
             });
         }
     </script>

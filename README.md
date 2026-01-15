@@ -30,6 +30,7 @@ Proporcionar una plataforma de streaming personal que permita:
 - **Cards de Categorías**: Con iconos únicos, gradientes y efectos hover
 - **Dropdowns Personalizados**: Sin selects nativos, con animaciones suaves
 - **Tema Oscuro**: Gradientes sutiles y colores vibrantes
+- **Smart Player**: Detección automática de resolución (4K/HD) y badges indicativos
 
 ### Panel de Administración
 
@@ -147,17 +148,38 @@ define('DB_PASS', '');
 Editar `config/app.php`:
 
 ```php
-define('BASE_URL', 'http://localhost:8000');
+// La configuración ahora es dinámica en config/app.php
+// No necesitas editar esto manualmente salvo casos especiales
+// define('BASE_URL', 'http://localhost:8000');
 ```
 
-### 6. Iniciar servidor
+### 6. Iniciar servidor (Modo Red)
+
+Para permitir acceso desde otros dispositivos:
 
 ```bash
-cd jech-films/public
-php -S localhost:8000
+# Ejecutar desde la raíz del proyecto
+php -S 0.0.0.0:8000 -t public
 
-# Acceder a: http://localhost:8000
+# Acceso local: http://localhost:8000
+# Acceso desde red: http://192.168.X.X:8000
 ```
+
+---
+
+## 🌐 Configuración de IP Fija (Windows) Básico
+
+Para evitar que la IP de tu PC cambie al reiniciar:
+
+1. Abre **Panel de Control** > **Redes e Internet** > **Ver el estado y las tareas de la red**.
+2. Clic en tu conexión (ej. Ethernet o Wi-Fi).
+3. Botón **Propiedades**.
+4. Selecciona **Protocolo de Internet versión 4 (TCP/IPv4)** y clic en **Propiedades**.
+5. Marca **Usar la siguiente dirección IP** y completa:
+   - **Dirección IP**: `192.168.1.50` (Un número libre en tu red)
+   - **Máscara de subred**: `255.255.255.0`
+   - **Puerta de enlace predeterminada**: `192.168.1.1` (IP de tu Router)
+6. **Servidor DNS preferido**: `8.8.8.8` (Google)
 
 ---
 

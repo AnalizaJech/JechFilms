@@ -25,21 +25,23 @@ define('VIEWS_PATH', BASE_PATH . '/views');
 define('UPLOADS_PATH', PUBLIC_PATH . '/uploads');
 define('MEDIA_PATH', BASE_PATH . '/media');
 
-// URL base (ajustar según tu servidor local)
-define('BASE_URL', 'http://localhost:8000');
+// URL base (Dinámica para red local)
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
+define('BASE_URL', $protocol . $host);
 
 // Configuración de sesiones
 define('SESSION_NAME', 'jech_films_session');
 define('SESSION_LIFETIME', 7200); // 2 horas
 
 // Configuración de uploads
-define('MAX_UPLOAD_SIZE', 1024 * 1024 * 500); // 500MB para videos
+define('MAX_UPLOAD_SIZE', 1024 * 1024 * 1024 * 50); // 50GB para videos 4K
 define('ALLOWED_VIDEO_TYPES', ['video/mp4', 'video/webm', 'video/ogg', 'video/x-matroska']);
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 // Configuración de la aplicación
 define('APP_NAME', 'Jech Films');
-define('APP_VERSION', '1.0.0');
+define('APP_VERSION', '1.2.0');
 
 // Paginación por defecto
 define('ITEMS_PER_PAGE', 20);

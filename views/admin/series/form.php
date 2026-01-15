@@ -299,8 +299,6 @@ input[type="number"] {
                     </label>
                 </div>
             </div>
-                </div>
-            </div>
         </div>
         
         <div class="flex items-center gap-4 mt-8 pt-6 border-t border-white/10">
@@ -316,7 +314,7 @@ input[type="number"] {
     
     <!-- Gestión de Episodios (solo en edición) - Oculto por defecto -->
     <?php if ($isEdit): ?>
-    <div id="sectionEpisodes" class="bg-jf-card rounded-2xl p-6 md:p-8 hidden">
+    <div id="sectionEpisodes" class="bg-[#121212] border border-white/10 rounded-2xl p-6 md:p-8 hidden mt-6 text-gray-200">
         <!-- Header -->
         <div class="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
             <div class="flex items-center gap-4">
@@ -441,13 +439,10 @@ input[type="number"] {
                     </button>
                 </div>
                 <div class="col-span-2 md:col-span-5">
-                    <label class="block text-xs text-gray-400 mb-1">Nombre del Video *</label>
-                    <div class="flex items-center gap-2">
-                        <input type="text" name="ep_video_name" placeholder="nombre-episodio" required
-                               class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
-                        <span class="text-gray-500 text-xs">.mp4/.mkv</span>
-                    </div>
-                    <span class="text-xs text-gray-500 mt-1 block">Ubicación: public/media/series/<?= slugify($series['title']) ?>/[nombre].[ext]</span>
+                    <label class="block text-xs text-gray-400 mb-1">Ruta del Video *</label>
+                    <input type="text" name="video_path" placeholder="series/carpeta/video.mp4" required
+                           class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
+                    <span class="text-xs text-gray-500 mt-1 block">Ruta relativa desde public/media/</span>
                 </div>
             </div>
         </form>

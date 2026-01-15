@@ -94,13 +94,13 @@ ob_start();
             <?php endif; ?>
             
             <div class="flex flex-wrap items-center gap-4">
-                <a href="<?= url($isMovie ? 'watch/movie/' . $item['id'] : 'series/' . $item['id']) ?>" 
-                   class="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition shadow-xl">
+                <a href="<?= url($isMovie ? 'watch/movie/' . $item['id'] : 'watch/series/' . $item['id']) ?>" 
+                   class="inline-flex items-center justify-center gap-3 bg-white text-black h-14 w-52 rounded-xl font-bold text-lg hover:bg-gray-100 transition shadow-xl">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     Reproducir
                 </a>
                 <button onclick='openInfoModal(<?= json_encode($item, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)' 
-                        class="inline-flex items-center gap-3 bg-white/15 backdrop-blur-sm px-6 py-4 rounded-xl font-semibold hover:bg-white/25 transition border border-white/10">
+                        class="inline-flex items-center justify-center gap-3 bg-white/15 backdrop-blur-sm h-14 w-52 rounded-xl font-semibold hover:bg-white/25 transition border border-white/10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Más Info
                 </button>
@@ -134,7 +134,7 @@ ob_start();
     
     <!-- Modal Container - solo scroll interno -->
     <div class="absolute inset-0 flex items-end sm:items-center justify-center sm:p-6 md:p-8" onclick="closeInfoModal()">
-        <div class="relative bg-[#141414] rounded-t-3xl sm:rounded-2xl max-w-4xl w-full sm:my-8 shadow-2xl border-t sm:border border-white/10 max-h-[95vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-thin" onclick="event.stopPropagation()">
+        <div class="relative bg-[#141414] rounded-t-3xl sm:rounded-2xl max-w-4xl w-full sm:my-8 shadow-2xl border-t sm:border border-white/10 max-h-[85vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-thin" onclick="event.stopPropagation()">
             
             <!-- Modal Header with Backdrop -->
             <div class="relative h-36 sm:h-56 md:h-72">
@@ -171,11 +171,11 @@ ob_start();
                         <div class="space-y-3 sm:space-y-0">
                             <!-- Fila principal: Play y Mi Lista -->
                             <div class="flex flex-wrap justify-center sm:justify-start items-center gap-2 md:gap-3">
-                                <a id="modalPlayBtn2" href="#" class="inline-flex items-center gap-2 bg-white text-black px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-bold hover:bg-gray-100 transition text-sm md:text-base">
+                                <a id="modalPlayBtn2" href="#" class="inline-flex items-center justify-center gap-2 bg-white text-black h-11 w-40 rounded-xl font-bold hover:bg-gray-100 transition text-sm md:text-base">
                                     <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     Reproducir
                                 </a>
-                                <button id="modalAddListBtn" onclick="toggleModalList()" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 md:px-4 py-2 md:py-2.5 rounded-xl font-medium transition text-sm md:text-base">
+                                <button id="modalAddListBtn" onclick="toggleModalList()" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 h-11 w-40 rounded-xl font-semibold transition text-sm md:text-base">
                                     <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                     Mi Lista
                                 </button>
@@ -202,18 +202,14 @@ ob_start();
                         
                         <!-- Episodios (solo para series) -->
                         <div id="modalEpisodes" class="mt-4 md:mt-6 hidden">
-                            <!-- Header con título y selector de temporada dropdown -->
-                            <div class="flex items-center justify-between gap-3 mb-4">
-                                <h3 class="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2">
-                                    <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                                    Episodios
-                                </h3>
-                                <!-- Dropdown selector de temporada -->
-                                <select id="seasonSelector" onchange="selectSeasonDropdown(this.value)" class="bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg px-3 py-1.5 text-sm font-medium cursor-pointer focus:outline-none focus:border-purple-500">
-                                </select>
-                            </div>
-                            <!-- Lista de episodios -->
-                            <div id="modalEpisodesList" class="space-y-2 max-h-52 sm:max-h-64 overflow-y-auto pr-2 scrollbar-thin"></div>
+                            <!-- Título Episodios -->
+                            <h3 class="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2 mb-4">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                Episodios
+                            </h3>
+                            
+                            <!-- Lista de Episodios (Contenedor Acordeón) -->
+                            <div id="modalEpisodesList" class="space-y-4"></div>
                         </div>
                     </div>
                 </div>
@@ -286,23 +282,39 @@ if (totalSlides > 0) {
 function openInfoModal(item) {
     currentModalItem = item;
     const modal = document.getElementById('infoModal');
-    const isMovie = item.video_path !== undefined;
+    if (!modal) return; // Safety check
+
+    // Logic robusta para determinar si es película
+    // En series-card no viene video_path, en movie-card sí.
+    const isMovie = item.video_path !== undefined && item.video_path !== null && item.video_path !== '';
     
-    // Imágenes - usar ruta directa o placeholder
+    // Setear URL de Play PRIMERO para asegurar funcionalidad
+    const playBtn = document.getElementById('modalPlayBtn2');
+    if (playBtn) {
+        playBtn.href = isMovie ? '/watch/movie/' + item.id : '/watch/series/' + item.id;
+    }
+
+    // Imágenes
     const defaultImg = '/assets/images/default-poster.svg';
     const backdrop = item.backdrop ? '/' + item.backdrop : (item.poster ? '/' + item.poster : defaultImg);
     const poster = item.poster ? '/' + item.poster : defaultImg;
-    document.getElementById('modalBackdrop').src = backdrop;
-    document.getElementById('modalPoster').src = poster;
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalPoster = document.getElementById('modalPoster');
+    if (modalBackdrop) modalBackdrop.src = backdrop;
+    if (modalPoster) modalPoster.src = poster;
     
     // Badge
     const badge = document.getElementById('modalBadge');
-    badge.textContent = isMovie ? 'Película' : 'Serie';
-    badge.className = 'inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase mb-3 ' + (isMovie ? 'bg-red-600' : 'bg-purple-600');
+    if (badge) {
+        badge.textContent = isMovie ? 'Película' : 'Serie';
+        badge.className = 'inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase mb-2 md:mb-3 ' + (isMovie ? 'bg-red-600' : 'bg-purple-600');
+    }
     
     // Título y descripción
-    document.getElementById('modalTitle').textContent = item.title;
-    document.getElementById('modalDescription').textContent = item.description || 'Sin descripción disponible.';
+    const titleEl = document.getElementById('modalTitle');
+    const descEl = document.getElementById('modalDescription');
+    if (titleEl) titleEl.textContent = item.title;
+    if (descEl) descEl.textContent = item.description || 'Sin descripción disponible.';
     
     // Meta info
     let meta = '';
@@ -317,110 +329,153 @@ function openInfoModal(item) {
     if (item.total_seasons) {
         meta += '<span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>' + item.total_seasons + ' Temp.</span>';
     }
-    document.getElementById('modalMeta').innerHTML = meta;
+    const metaEl = document.getElementById('modalMeta');
+    if (metaEl) metaEl.innerHTML = meta;
     
     // Categorías
     let cats = '';
     if (item.categories) {
-        item.categories.split(', ').forEach(c => cats += '<span class="px-3 py-1 bg-white/10 rounded-full text-sm">' + c + '</span>');
+        // Safe check for string
+        const catStr = String(item.categories);
+        catStr.split(', ').forEach(c => cats += '<span class="px-3 py-1 bg-white/10 rounded-full text-sm">' + c + '</span>');
     }
-    document.getElementById('modalCategories').innerHTML = cats;
+    const catsEl = document.getElementById('modalCategories');
+    if (catsEl) catsEl.innerHTML = cats;
     
-    // URLs - Películas al reproductor, series a la página de detalles
-    const playUrl = isMovie ? '/watch/movie/' + item.id : '/series/' + item.id;
-    document.getElementById('modalPlayBtn2').href = playUrl;
+    // Verificar estado (Lista / Reacción)
+    if (typeof isLoggedIn !== 'undefined' && isLoggedIn) {
+        updateListUI(false);
+        updateReactionUI(null);
+        
+        const type = isMovie ? 'movie' : 'series';
+        fetch('/api/status?type=' + type + '&id=' + item.id)
+            .then(r => r.json())
+            .then(d => {
+                updateListUI(d.in_list);
+                updateReactionUI(d.reaction);
+            })
+            .catch(console.error);
+    }
     
-    // Sección de episodios con selector de temporadas
+    // Sección de episodios
     const episodesDiv = document.getElementById('modalEpisodes');
     const episodesList = document.getElementById('modalEpisodesList');
-    const seasonSelector = document.getElementById('seasonSelector');
     
-    if (!isMovie) {
-        // Cargar episodios via API para series
+    // Importante: Limpiar episodios anteriores
+    if (episodesList) episodesList.innerHTML = '';
+
+    if (!isMovie && episodesDiv && episodesList) {
         episodesDiv.classList.remove('hidden');
-        seasonSelector.innerHTML = '';
         episodesList.innerHTML = '<div class="text-center py-4 text-gray-500"><svg class="w-5 h-5 animate-spin mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></div>';
         
         fetch('/api/episodes/' + item.id)
             .then(r => r.json())
             .then(data => {
                 if (data.episodes && data.episodes.length > 0) {
-                    // Agrupar episodios por temporada
                     const seasons = {};
                     data.episodes.forEach(ep => {
                         if (!seasons[ep.season]) seasons[ep.season] = [];
                         seasons[ep.season].push(ep);
                     });
-                    
-                    const seasonNumbers = Object.keys(seasons).sort((a, b) => a - b);
-                    
-                    // Guardar datos para uso en dropdown
-                    window.currentSeasons = seasons;
-                    window.currentSeriesId = item.id;
-                    
-                    // Crear opciones del dropdown
-                    seasonNumbers.forEach((sNum, idx) => {
-                        const option = document.createElement('option');
-                        option.value = sNum;
-                        option.textContent = 'Temporada ' + sNum;
-                        if (idx === 0) option.selected = true;
-                        seasonSelector.appendChild(option);
-                    });
-                    
-                    // Mostrar episodios de la primera temporada
-                    if (seasonNumbers.length > 0) {
-                        renderEpisodes(seasons[seasonNumbers[0]], item.id);
-                    }
+                    renderSeasonsAccordion(seasons, item.id);
                 } else {
-                    seasonSelector.style.display = 'none';
                     episodesList.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">No hay episodios disponibles</div>';
                 }
             })
             .catch(e => {
+                console.error(e);
                 episodesList.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">Error al cargar episodios</div>';
             });
     } else {
-        episodesDiv.classList.add('hidden');
-        episodesList.innerHTML = '';
-        seasonSelector.innerHTML = '';
+        if (episodesDiv) episodesDiv.classList.add('hidden');
     }
     
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
-// Función para cambiar temporada desde dropdown
-function selectSeasonDropdown(season) {
-    if (window.currentSeasons && window.currentSeriesId) {
-        renderEpisodes(window.currentSeasons[season], window.currentSeriesId);
+function updateListUI(inList) {
+    const btn = document.getElementById('modalAddListBtn');
+    if (!btn) return;
+    if (inList) {
+        btn.innerHTML = '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> En Mi Lista';
+        // Estilo Activo: Blanco/20 fondo, texto blanco, hover más claro
+        // Estilo Activo: Blanco/20 fondo, texto blanco
+        btn.className = 'flex-1 md:flex-none h-11 w-40 flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 rounded-xl font-semibold transition text-white';
+    } else {
+        btn.innerHTML = '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Mi Lista';
+        // Estilo Inactivo: Blanco/10 fondo, texto gris claro
+        btn.className = 'flex-1 md:flex-none h-11 w-40 flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition text-gray-200';
     }
 }
 
-// Renderizar episodios de una temporada
-function renderEpisodes(episodes, seriesId) {
+function updateReactionUI(reaction) {
+    const likeBtn = document.getElementById('modalLikeBtn');
+    const dislikeBtn = document.getElementById('modalDislikeBtn');
+    const likeBtnMobile = document.getElementById('modalLikeBtnMobile');
+    const dislikeBtnMobile = document.getElementById('modalDislikeBtnMobile');
+    
+    const baseClass = 'rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-gray-400';
+    const activeClass = 'rounded-full bg-white/20 flex items-center justify-center transition text-white';
+
+    const updateBtn = (btn, isActive) => {
+        if (!btn) return;
+        const sizeClass = btn.id.includes('Mobile') ? 'w-10 h-10' : 'w-9 h-9 md:w-10 md:h-10';
+        btn.className = (isActive ? activeClass : baseClass) + ' ' + sizeClass;
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('fill', isActive ? 'currentColor' : 'none');
+    };
+
+    [likeBtn, likeBtnMobile].forEach(btn => updateBtn(btn, reaction === 'like'));
+    [dislikeBtn, dislikeBtnMobile].forEach(btn => updateBtn(btn, reaction === 'dislike'));
+}
+
+// Renderizar acordeón de temporadas
+function renderSeasonsAccordion(seasons, seriesId) {
     const list = document.getElementById('modalEpisodesList');
-    if (!episodes || episodes.length === 0) {
-        list.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">No hay episodios en esta temporada</div>';
+    const seasonNumbers = Object.keys(seasons).sort((a, b) => a - b);
+    
+    let html = '';
+    
+    if (seasonNumbers.length === 0) {
+        list.innerHTML = '<div class="text-center py-4 text-gray-500">No hay episodios</div>';
         return;
     }
     
-    let html = '';
-    episodes.forEach(ep => {
-        html += '<a href="/watch/series/' + seriesId + '/' + ep.id + '" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-purple-500/10 hover:border-purple-500/30 border border-transparent transition group">';
-        html += '<span class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold shrink-0">' + ep.episode_number + '</span>';
-        html += '<div class="flex-1 min-w-0">';
-        html += '<div class="font-medium text-sm truncate group-hover:text-purple-300 transition">' + (ep.title || 'Episodio ' + ep.episode_number) + '</div>';
-        if (ep.duration) {
-            html += '<div class="text-xs text-gray-500">' + ep.duration + ' min</div>';
-        }
-        if (ep.description) {
-            html += '<div class="text-xs text-gray-600 truncate mt-0.5">' + ep.description + '</div>';
-        }
-        html += '</div>';
-        html += '<svg class="w-5 h-5 text-gray-600 group-hover:text-purple-400 shrink-0 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-        html += '</a>';
+    seasonNumbers.forEach((sNum, index) => {
+        const episodes = seasons[sNum];
+        const isOpen = index === 0;
+
+        html += `<div class="bg-white/5 rounded-xl overflow-hidden mb-2">`;
+        html += `<button onclick="toggleSeason(${sNum})" class="w-full flex items-center justify-between p-4 hover:bg-white/5 transition text-left group select-none">`;
+        html += `<span class="font-bold text-gray-200 group-hover:text-white transition">Temporada ${sNum}</span>`;
+        html += `<svg id="arrow-s-${sNum}" class="w-5 h-5 text-gray-500 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
+        html += `</button>`;
+        
+        html += `<div id="season-body-${sNum}" class="${isOpen ? '' : 'hidden'} border-t border-white/5 bg-black/20 p-2 space-y-2">`;
+        
+        episodes.forEach(ep => {
+            html += `<a href="/watch/series/${seriesId}/${ep.id}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition group/ep">`;
+            html += `<span class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold shrink-0 text-sm whitespace-nowrap">${ep.episode_number}</span>`;
+            html += `<div class="flex-1 min-w-0">`;
+            html += `<div class="font-medium text-sm truncate text-gray-300 group-hover/ep:text-purple-300 transition">${ep.title || 'Episodio ' + ep.episode_number}</div>`;
+            if (ep.duration) html += `<div class="text-xs text-gray-600 mt-0.5">${ep.duration} min</div>`;
+            html += `</div>`;
+            html += `<svg class="w-4 h-4 text-gray-600 group-hover/ep:text-purple-400 shrink-0 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+            html += `</a>`;
+        });
+        
+        html += `</div></div>`;
     });
+    
     list.innerHTML = html;
+}
+
+function toggleSeason(sNum) {
+    const body = document.getElementById(`season-body-${sNum}`);
+    const arrow = document.getElementById(`arrow-s-${sNum}`);
+    if (body) body.classList.toggle('hidden');
+    if (arrow) arrow.classList.toggle('rotate-180');
 }
 
 function closeInfoModal() {
@@ -429,12 +484,8 @@ function closeInfoModal() {
     currentModalItem = null;
 }
 
-// Funciones del modal con verificación de login
 function toggleModalList() {
-    if (!isLoggedIn) {
-        window.location.href = loginUrl;
-        return;
-    }
+    if (!isLoggedIn) { window.location.href = loginUrl; return; }
     if (!currentModalItem) return;
     const type = currentModalItem.video_path !== undefined ? 'movie' : 'series';
     fetch('/api/list', {
@@ -442,21 +493,12 @@ function toggleModalList() {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({type: type, id: currentModalItem.id})
     }).then(r => r.json()).then(d => {
-        const btn = document.getElementById('modalAddListBtn');
-        if (d.in_list) {
-            // Solo cambia el icono a check
-            btn.innerHTML = '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> En Mi Lista';
-        } else {
-            btn.innerHTML = '<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Mi Lista';
-        }
+        updateListUI(d.in_list);
     }).catch(e => console.log('Error:', e));
 }
 
 function modalReact(reaction) {
-    if (!isLoggedIn) {
-        window.location.href = loginUrl;
-        return;
-    }
+    if (!isLoggedIn) { window.location.href = loginUrl; return; }
     if (!currentModalItem) return;
     const type = currentModalItem.video_path !== undefined ? 'movie' : 'series';
     fetch('/api/react', {
@@ -464,31 +506,7 @@ function modalReact(reaction) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({type: type, id: currentModalItem.id, reaction: reaction})
     }).then(r => r.json()).then(d => {
-        // Desktop buttons
-        const likeBtn = document.getElementById('modalLikeBtn');
-        const dislikeBtn = document.getElementById('modalDislikeBtn');
-        // Mobile buttons
-        const likeBtnMobile = document.getElementById('modalLikeBtnMobile');
-        const dislikeBtnMobile = document.getElementById('modalDislikeBtnMobile');
-        
-        // Clases base y activas
-        const baseClass = 'rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition text-gray-400';
-        const likeActiveClass = 'rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center transition text-white';
-        const dislikeActiveClass = 'rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition text-white';
-        
-        // Actualizar botones de like
-        [likeBtn, likeBtnMobile].forEach(btn => {
-            if (!btn) return;
-            const size = btn.id.includes('Mobile') ? 'w-10 h-10' : 'w-9 h-9 md:w-10 md:h-10';
-            btn.className = size + ' ' + (d.reaction === 'like' ? likeActiveClass : baseClass);
-        });
-        
-        // Actualizar botones de dislike
-        [dislikeBtn, dislikeBtnMobile].forEach(btn => {
-            if (!btn) return;
-            const size = btn.id.includes('Mobile') ? 'w-10 h-10' : 'w-9 h-9 md:w-10 md:h-10';
-            btn.className = size + ' ' + (d.reaction === 'dislike' ? dislikeActiveClass : baseClass);
-        });
+        updateReactionUI(d.reaction);
     }).catch(e => console.log('Error:', e));
 }
 

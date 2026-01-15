@@ -47,7 +47,11 @@ class PlayerController {
         // Obtener progreso guardado (si el usuario está logueado)
         $watchProgress = null;
         if (isAuthenticated()) {
-            $watchProgress = $this->progressModel->getProgress(userId(), 'movie', $id);
+            try {
+                $watchProgress = $this->progressModel->getProgress(userId(), 'movie', $id);
+            } catch (Exception $e) {
+                // Silenciosamente ignorar error si la tabla no existe
+            }
         }
         
         $content = $movie;
@@ -55,6 +59,23 @@ class PlayerController {
         $nextContent = null;
         
         require_once VIEWS_PATH . '/player/watch.php';
+    }
+
+    public function series(int $seriesId = 0, int $episodeId = 0): void {
+        if ($episodeId > 0) {
+            $this->episode($episodeId);
+            return;
+        }
+        
+        // Si solo tenemos ID de serie, buscar el primer episodio
+        $firstEp = $this->seriesModel->getFirstEpisode($seriesId);
+        
+        if ($firstEp) {
+            $this->episode($firstEp['id']);
+        } else {
+            // Si la serie no tiene episodios, redirigir a lista
+            redirect('series');
+        }
     }
     
     /**
@@ -79,10 +100,14 @@ class PlayerController {
         // Registrar visualización
         $viewId = $this->viewModel->record('episode', $id, userId());
         
-        // Obtener progreso guardado
+        // Obtener progreso guardado (si el usuario está logueado)
         $watchProgress = null;
         if (isAuthenticated()) {
-            $watchProgress = $this->progressModel->getProgress(userId(), 'episode', $id);
+            try {
+                $watchProgress = $this->progressModel->getProgress(userId(), 'episode', $id);
+            } catch (Exception $e) {
+                // Silenciosamente ignorar error si la tabla no existe
+            }
         }
         
         // Obtener siguiente episodio

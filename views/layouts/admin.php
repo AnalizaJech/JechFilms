@@ -45,8 +45,8 @@
     ?>
     
     <div class="flex min-h-screen">
-        <!-- Mobile Header -->
-        <div class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a] border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <!-- Mobile Header - Altura fija para evitar estiramientos -->
+        <div class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a] border-b border-white/10 px-4 h-16 flex items-center justify-between">
             <a href="<?= url('') ?>" class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center">
                     <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -114,7 +114,7 @@
         </aside>
         
         <!-- Main content -->
-        <main class="flex-1 lg:ml-64 p-4 lg:p-8 bg-[#0f0f0f] pt-20 lg:pt-8">
+        <main class="flex-1 lg:ml-64 p-4 lg:p-8 bg-[#0f0f0f] pt-16 lg:pt-8 overflow-x-hidden">
             <!-- Flash messages -->
             <?php $flash = getFlash(); if ($flash): ?>
             <div class="mb-6 px-5 py-4 rounded-xl flex items-center gap-3 <?= $flash['type'] === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'bg-green-500/10 border border-green-500/30 text-green-400' ?>">

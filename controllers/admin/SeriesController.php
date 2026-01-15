@@ -1,7 +1,7 @@
 <?php
 /**
  * Controlador CRUD de Series (Admin)
- * Con auto-detección de extensión de video para episodios
+ * Con gestión de carpetas y rutas manuales
  */
 
 require_once BASE_PATH . '/models/Series.php';
@@ -11,30 +11,10 @@ class SeriesController {
     private Series $seriesModel;
     private Category $categoryModel;
     
-    // Extensiones de video soportadas
-    private array $videoExtensions = ['mp4', 'mkv', 'avi', 'webm', 'mov', 'm4v'];
-    
     public function __construct() {
         requireAdmin();
         $this->seriesModel = new Series();
         $this->categoryModel = new Category();
-    }
-    
-    /**
-     * Busca el archivo de video del episodio con cualquier extensión soportada
-     */
-    private function findEpisodeVideoFile(string $seriesSlug, string $videoName): string {
-        $basePath = PUBLIC_PATH . '/media/series/' . $seriesSlug . '/';
-        
-        foreach ($this->videoExtensions as $ext) {
-            $filePath = $basePath . $videoName . '.' . $ext;
-            if (file_exists($filePath)) {
-                return 'series/' . $seriesSlug . '/' . $videoName . '.' . $ext;
-            }
-        }
-        
-        // Retornar con extensión por defecto
-        return 'series/' . $seriesSlug . '/' . $videoName . '.mp4';
     }
     
     public function index(): void {
@@ -69,6 +49,13 @@ class SeriesController {
         
         $seriesId = $this->seriesModel->create($data);
         $this->seriesModel->syncCategories($seriesId, post('categories', []));
+        
+        // Crear carpeta física
+        $slug = slugify($data['title']);
+        $path = PUBLIC_PATH . '/media/series/' . $slug;
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
         
         flash('success', 'Serie creada correctamente.');
         redirect('admin/series');
@@ -116,7 +103,13 @@ class SeriesController {
     }
     
     public function delete(int $id = 0): void {
-        $this->seriesModel->delete($id);
+        $series = $this->seriesModel->find($id);
+        if ($series) {
+            $slug = slugify($series['title']);
+            $path = PUBLIC_PATH . '/media/series/' . $slug;
+            $this->seriesModel->delete($id);
+            $this->deleteDirectory($path);
+        }
         flash('success', 'Serie eliminada.');
         redirect('admin/series');
     }
@@ -125,13 +118,8 @@ class SeriesController {
     public function addEpisode(int $seriesId = 0): void {
         if (!isPost() || !validateCsrf()) redirect('admin/series/edit/' . $seriesId);
         
-        // Obtener serie para el slug
-        $series = $this->seriesModel->find($seriesId);
-        $seriesSlug = slugify($series['title'] ?? 'serie');
-        
-        // Procesar video_name para obtener video_path completo
-        $videoName = trim(post('ep_video_name', ''));
-        $videoPath = $this->findEpisodeVideoFile($seriesSlug, $videoName);
+        // Video Path Manual
+        $videoPath = trim(post('video_path', ''));
         
         $data = [
             'series_id' => $seriesId,
@@ -188,13 +176,11 @@ class SeriesController {
             redirect('admin/series');
         }
         
-        // Obtener serie para el slug
-        $series = $this->seriesModel->find($episode['series_id']);
-        $seriesSlug = slugify($series['title'] ?? 'serie');
-        
-        // Procesar video_name para obtener video_path completo
-        $videoName = trim(post('video_name', ''));
-        $videoPath = $videoName ? $this->findEpisodeVideoFile($seriesSlug, $videoName) : $episode['video_path'];
+        // Video Path Manual (Actualización)
+        $videoPath = trim(post('video_path', ''));
+        if (empty($videoPath)) {
+            $videoPath = $episode['video_path'];
+        }
         
         $data = [
             'season' => (int) post('season', 1),
@@ -212,5 +198,15 @@ class SeriesController {
         $this->seriesModel->updateEpisode($episodeId, $data);
         flash('success', 'Episodio actualizado.');
         redirect('admin/series/edit/' . $episode['series_id']);
+    }
+
+    private function deleteDirectory(string $dir): bool {
+        if (!file_exists($dir)) return true;
+        if (!is_dir($dir)) return unlink($dir);
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') continue;
+            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) return false;
+        }
+        return rmdir($dir);
     }
 }

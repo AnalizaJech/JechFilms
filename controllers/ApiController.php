@@ -125,6 +125,34 @@ class ApiController {
     }
     
     /**
+     * Obtener estado (En lista / Reacción)
+     */
+    public function status(): void {
+        if (!isAuthenticated()) {
+            $this->json(['in_list' => false, 'reaction' => null]);
+            return;
+        }
+        
+        $type = $_GET['type'] ?? '';
+        $id = (int) ($_GET['id'] ?? 0);
+        
+        if (!in_array($type, ['movie', 'series']) || $id <= 0) {
+            $this->json(['error' => 'Datos inválidos'], 400);
+        }
+        
+        $listModel = new UserList();
+        $reactionModel = new Reaction();
+        
+        $inList = $listModel->isInList(userId(), $type, $id);
+        $reaction = $reactionModel->getUserReaction(userId(), $type, $id);
+        
+        $this->json([
+            'in_list' => $inList,
+            'reaction' => $reaction
+        ]);
+    }
+    
+    /**
      * Helpers
      */
     private function requireAuthJson(): void {
@@ -167,6 +195,9 @@ class ApiController {
                 break;
             case 'search':
                 $this->search();
+                break;
+            case 'status':
+                $this->status();
                 break;
             default:
                 $this->json(['error' => 'Endpoint no encontrado'], 404);

@@ -33,7 +33,7 @@ $seriesData = json_encode([
         </div>
         
         <!-- Botón Play central en hover - va al detalle de la serie -->
-        <a href="<?= url('series/' . $item['id']) ?>" 
+        <a href="<?= url('watch/series/' . $item['id']) ?>" 
            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10" 
            onclick="event.stopPropagation()">
             <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 hover:bg-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl">
